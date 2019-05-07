@@ -1,0 +1,15 @@
+{
+  "name": "sample_code_base",
+  "version": "1.0.0",
+  "description": "A sample code base to serve as starting point of technical discussion.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cypress": "cypress open"
+  },
+  "author": "Pratima",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^3.2.0"
+  }
+}

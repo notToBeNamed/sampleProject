@@ -1,0 +1,6 @@
+{
+	"env": {
+		"prodUrl": "https://www.mathworks.com/",
+		"searchURLPath": "search/site_search.html"
+	}
+}
