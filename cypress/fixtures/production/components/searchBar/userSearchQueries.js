@@ -8,7 +8,7 @@
 		"camelCase": "mAtLaB",
 		"randomCase": "mATLAB"	
 	},
-	"errorMsg": {
+	"errorMsgs": {
 		"emptyStringSearch": "Please enter a search string"
 	},
 	"selectors": {

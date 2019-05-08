@@ -38,61 +38,46 @@ describe("Test cases for search results", () => {
 	
 	it("Verify search component returns result for correct keyword", () => {
 		cy.get("@fixture").then((fixture) => {
-			cy.get(fixture["selectors"]["textBoxes"]["search"]["main"])
-			.type(fixture["keywords"]["correct"])
+			helper(fixture["keywords"]["correct"], fixture)
 			.then(() => {
-				cy.get(fixture["selectors"]["buttons"]["search"]["main"])
-				.click()
-				.then(() => {
-					//Test query text appears in GET request 
-					cy.url()
-					.should("contain", fixture["queryString"]);
-					//Div with id #result_summary_top only appears in DOM if search results are obtained
-					cy.get(fixture["selectors"]["divs"]["search"]["summary"])
-					.contains(fixture["partialSummaryTxt"]);
-				})
+				//Test query text appears in GET request 
+				cy.url()
+				.should("contain", fixture["queryString"]);
+				//Div with id #result_summary_top only appears in DOM if search results are obtained
+				cy.get(fixture["selectors"]["divs"]["search"]["summary"])
+				.contains(fixture["partialSummaryTxt"]);
 			})
-		})
+		});
 	})
 
 	it("Verify search component returns consistent result for same keyword", () => {
 		cy.get("@fixture").then((fixture) => {
-			cy.get(fixture["selectors"]["textBoxes"]["search"]["main"])
-			.type(fixture["keywords"]["correct"])
+			helper(fixture["keywords"]["correct"], fixture)
 			.then(() => {
-				cy.get(fixture["selectors"]["buttons"]["search"]["main"])
-				.click()
-				.then(() => {
-					cy.get(fixture["selectors"]["divs"]["search"]["summary"]).invoke("text")
-					.then(($searchResult1) => {
-						//click search button again to query the database
-						cy.get(fixture["selectors"]["buttons"]["search"]["main"])
-						.click()
-						.then(() => {
-							cy.get(fixture["selectors"]["divs"]["search"]["summary"]).invoke("text")
-							.then(($searchResult2) => {
-								expect($searchResult1).to.equal($searchResult2);
-							})
+				cy.get(fixture["selectors"]["divs"]["search"]["summary"]).invoke("text")
+				.then(($searchResult1) => {
+					//click search button again to query the database
+					cy.get(fixture["selectors"]["buttons"]["search"]["main"])
+					.click()
+					.then(() => {
+						cy.get(fixture["selectors"]["divs"]["search"]["summary"]).invoke("text")
+						.then(($searchResult2) => {
+							expect($searchResult1).to.equal($searchResult2);
 						})
 					})
 				})
 			})
-		})
+		});
 	})
 
 	it("Verify search component returns result for partial keyword", () => {
 		cy.get("@fixture").then((fixture) => {
-			cy.get(fixture["selectors"]["textBoxes"]["search"]["main"])
-			.type(fixture["keywords"]["partial"])
+			helper(fixture["keywords"]["partial"], fixture)			
 			.then(() => {
-				cy.get(fixture["selectors"]["buttons"]["search"]["main"])
-				.click()
-				.then(() => {
-					cy.get(fixture["selectors"]["divs"]["search"]["summary"])
-					.contains(fixture["partialSummaryTxt"]);
-				})
+				cy.get(fixture["selectors"]["divs"]["search"]["summary"])
+				.contains(fixture["partialSummaryTxt"]);
 			})
-		})
+		});
 	})
 
 	it("Verify search component returns no result for empty search query and warns the user", () => {
@@ -101,35 +86,25 @@ describe("Test cases for search results", () => {
 			.click()
 			.then(() => {
 				cy.get(fixture["selectors"]["divs"]["search"]["container"])
-				.contains(fixture["errorMsg"]["emptyStringSearch"]);
+				.contains(fixture["errorMsgs"]["emptyStringSearch"]);
 			})
 		})
 	})
 
 	it("Verify number of search hits is case insensitive", () => {
 		cy.get("@fixture").then((fixture) => {
-			cy.get(fixture["selectors"]["textBoxes"]["search"]["main"])
-			.type(fixture["keywords"]["camelCase"])
+			helper(fixture["keywords"]["camelCase"], fixture)
 			.then(() => {
-				cy.get(fixture["selectors"]["buttons"]["search"]["main"])
-				.click()
-				.then(() => {
-					cy.get(fixture["selectors"]["divs"]["search"]["summary"]).invoke("text")
-					.then(($searchResult1) => {
-						cy.get(fixture["selectors"]["textBoxes"]["search"]["main"])
-						.clear()
+				cy.get(fixture["selectors"]["divs"]["search"]["summary"]).invoke("text")
+				.then(($searchResult1) => {
+					cy.get(fixture["selectors"]["textBoxes"]["search"]["main"])
+					.clear()
+					.then(() => {
+						helper(fixture["keywords"]["randomCase"], fixture)
 						.then(() => {
-							cy.get(fixture["selectors"]["textBoxes"]["search"]["main"])
-							.type(fixture["keywords"]["randomCase"])
-							.then(() => {
-								cy.get(fixture["selectors"]["buttons"]["search"]["main"])
-								.click()
-								.then(() => {
-									cy.get(fixture["selectors"]["divs"]["search"]["summary"]).invoke("text")
-									.then(($searchResult2) => {
-										expect($searchResult1).to.equal($searchResult2);
-									})
-								})
+							cy.get(fixture["selectors"]["divs"]["search"]["summary"]).invoke("text")
+							.then(($searchResult2) => {
+								expect($searchResult1).to.equal($searchResult2);
 							})
 						}) 
 					})	
@@ -139,17 +114,31 @@ describe("Test cases for search results", () => {
 	})
 
 	it("Verify search component returns result for slightly misspelled query", () => {
-		cy.get("@fixture").then((fixture) => {
-			cy.get(fixture["selectors"]["textBoxes"]["search"]["main"])
-			.type(fixture["keywords"]["misspelled"])
+		cy.get("@fixture")
+		.then((fixture) => {
+			helper(fixture["keywords"]["misspelled"], fixture)
 			.then(() => {
-				cy.get(fixture["selectors"]["buttons"]["search"]["main"])
-				.click()
-				.then(() => {
-					cy.get(fixture["selectors"]["divs"]["search"]["summary"]);
-				})
+				cy.get(fixture["selectors"]["divs"]["search"]["summary"]);
 			})
 		})
 	})
+
+	function helper(keyword, fixture) {
+		return new Promise((resolve, reject) => {
+			//select the search query field and enter keyword
+			cy.get(fixture["selectors"]["textBoxes"]["search"]["main"])
+			.type(keyword)
+			.then((success, err) => {
+				if(err) return reject(err);
+				//click the search button
+				cy.get(fixture["selectors"]["buttons"]["search"]["main"])
+				.click()
+				.then((success, err) => {
+					if(err) return reject(err);
+					return resolve();
+				})
+			})
+		})
+	}
 	
 })
