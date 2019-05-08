@@ -38,7 +38,7 @@ describe("Test cases for search results", () => {
 	
 	it("Verify search component returns result for correct keyword", () => {
 		cy.get("@fixture").then((fixture) => {
-			helper(fixture["keywords"]["correct"], fixture)
+			searchKeyword(fixture["keywords"]["correct"], fixture)
 			.then(() => {
 				//Test query text appears in GET request 
 				cy.url()
@@ -52,7 +52,7 @@ describe("Test cases for search results", () => {
 
 	it("Verify search component returns consistent result for same keyword", () => {
 		cy.get("@fixture").then((fixture) => {
-			helper(fixture["keywords"]["correct"], fixture)
+			searchKeyword(fixture["keywords"]["correct"], fixture)
 			.then(() => {
 				cy.get(fixture["selectors"]["divs"]["search"]["summary"]).invoke("text")
 				.then(($searchResult1) => {
@@ -72,7 +72,7 @@ describe("Test cases for search results", () => {
 
 	it("Verify search component returns result for partial keyword", () => {
 		cy.get("@fixture").then((fixture) => {
-			helper(fixture["keywords"]["partial"], fixture)			
+			searchKeyword(fixture["keywords"]["partial"], fixture)			
 			.then(() => {
 				cy.get(fixture["selectors"]["divs"]["search"]["summary"])
 				.contains(fixture["partialSummaryTxt"]);
@@ -93,14 +93,14 @@ describe("Test cases for search results", () => {
 
 	it("Verify number of search hits is case insensitive", () => {
 		cy.get("@fixture").then((fixture) => {
-			helper(fixture["keywords"]["camelCase"], fixture)
+			searchKeyword(fixture["keywords"]["camelCase"], fixture)
 			.then(() => {
 				cy.get(fixture["selectors"]["divs"]["search"]["summary"]).invoke("text")
 				.then(($searchResult1) => {
 					cy.get(fixture["selectors"]["textBoxes"]["search"]["main"])
 					.clear()
 					.then(() => {
-						helper(fixture["keywords"]["randomCase"], fixture)
+						searchKeyword(fixture["keywords"]["randomCase"], fixture)
 						.then(() => {
 							cy.get(fixture["selectors"]["divs"]["search"]["summary"]).invoke("text")
 							.then(($searchResult2) => {
@@ -116,14 +116,14 @@ describe("Test cases for search results", () => {
 	it("Verify search component returns result for slightly misspelled query", () => {
 		cy.get("@fixture")
 		.then((fixture) => {
-			helper(fixture["keywords"]["misspelled"], fixture)
+			searchKeyword(fixture["keywords"]["misspelled"], fixture)
 			.then(() => {
 				cy.get(fixture["selectors"]["divs"]["search"]["summary"]);
 			})
 		})
 	})
 
-	function helper(keyword, fixture) {
+	function searchKeyword(keyword, fixture) {
 		return new Promise((resolve, reject) => {
 			//select the search query field and enter keyword
 			cy.get(fixture["selectors"]["textBoxes"]["search"]["main"])
